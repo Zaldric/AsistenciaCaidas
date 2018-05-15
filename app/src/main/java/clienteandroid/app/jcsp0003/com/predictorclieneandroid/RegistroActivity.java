@@ -101,11 +101,12 @@ public class RegistroActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String value){
             Log.i(value, "");
-            Toast.makeText(context, value, Toast.LENGTH_LONG).show();
             if(value.equals("-1")){
                 Toast.makeText(context, "Error en el registro", Toast.LENGTH_LONG).show();
             }else{
                 Toast.makeText(context, "Registro correcto", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent (v.getContext(), LoginActivity.class);
+                startActivityForResult(intent, 0);
             }
         }
     }

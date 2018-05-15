@@ -111,14 +111,13 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String value){
             Log.i(value, value);
-            Toast.makeText(context, value, Toast.LENGTH_LONG).show();
 
-            if(value.equals("-1")){
-                Toast.makeText(context, "Correo o contraseña no válidos", Toast.LENGTH_LONG).show();
-            }else{
+            if(value.equals("1")){
                 Intent intent = new Intent (v.getContext(), AcelerometroActivity.class);
                 startActivityForResult(intent, 0);
                 finish();
+            }else{
+                Toast.makeText(context, "Correo o contraseña no válidos", Toast.LENGTH_LONG).show();
             }
 
         }
