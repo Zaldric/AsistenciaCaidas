@@ -23,9 +23,7 @@ import android.hardware.SensorManager;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 
@@ -45,6 +43,9 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
 
     private ArrayList<Respuestas> respuest;
     private TextToSpeech leer;
+    private float tempo;
+
+    private boolean tres;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
         setContentView(R.layout.activity_acelerometro);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         tlfTask tareaLogin = new tlfTask();
-        tareaLogin.execute("14");
+        tareaLogin.execute("15");
 
         inicializar();
     }
@@ -83,13 +84,31 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
                 if (movement > min_movement) {
                     if (current_time - last_movement >= limit) {
                         char aux=String.valueOf(movement).charAt(0);
-                        if( aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
-                            Intent i = new Intent(ACTION_DIAL);
-                            i.setData(Uri.parse("tel:"+telefono));
-                            startActivity(i);
+                        if(tres){
+                            if ( aux == '0' || aux == '1' || aux == '2') {
+                                tres=false;
+                                onStop();
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    leer.speak("¿Te has caido?", TextToSpeech.QUEUE_FLUSH, null, null);
+                                }else {
+                                    leer.speak("¿Te has caido?", TextToSpeech.QUEUE_FLUSH, null);
+                                }
+                                Intent hablar = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                                hablar.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "es-MX");
+                                startActivityForResult(hablar, RECONOCEDOR_VOZ);
+                                tempo = movement;
+                            }else{
+                                if( aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                                    Intent i = new Intent(ACTION_DIAL);
+                                    i.setData(Uri.parse("tel:"+telefono));
+                                    startActivity(i);
+                                }
+                            }
                         }
-                        //registroTask tareaLogin = new registroTask();
-                        //tareaLogin.execute("13#" + movement);
+                        if ( aux == '3'){
+                            tres=true;
+                        }
+
                     }
                     last_movement = current_time;
                 }
@@ -172,6 +191,8 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
             startActivity(i);
         }
         if (respuestita.equals("Llamando a los servicios de emergencia")) {
+            logTask log = new logTask();
+            log.execute("14#" + tempo);
             Intent i = new Intent(ACTION_DIAL);
             i.setData(Uri.parse("tel:061"));
             startActivity(i);
@@ -182,6 +203,7 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
     public void inicializar(){
         respuest = proveerDatos();
         leer = new TextToSpeech(this, this);
+        tres=false;
     }
 
     //LLamada del botón del micro
@@ -202,7 +224,8 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
         respuestas.add(new Respuestas("ayuda", "Llamando a los servicios de emergencia"));
         respuestas.add(new Respuestas("socorro", "Llamando a los servicios de emergencia"));
         respuestas.add(new Respuestas("auxilio", "Llamando a los servicios de emergencia"));
-
+        respuestas.add(new Respuestas("si", "Llamando a los servicios de emergencia"));
+        respuestas.add(new Respuestas("no", "Por favor, tenga cuidado!"));
         return respuestas;
     }
 
@@ -247,6 +270,33 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
         protected void onPostExecute(String value) {
             telefono = value.toString();
             Toast.makeText(context, value, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    class logTask extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... values) {
+            try {
+                String request = values[0];
+                SingletonSocket.Instance().getOutput().println(request);
+
+                InputStream stream = SingletonSocket.Instance().getSocket().getInputStream();
+                byte[] lenBytes = new byte[256];
+                stream.read(lenBytes, 0, 256);
+                String received = new String(lenBytes, "UTF-8").trim();
+
+                return received;
+            } catch (UnknownHostException ex) {
+                return ex.getMessage();
+            } catch (IOException ex) {
+                return ex.getMessage();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String value) {
+
         }
     }
 

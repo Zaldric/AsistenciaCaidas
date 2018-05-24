@@ -32,6 +32,7 @@ public class RegistroActivity extends AppCompatActivity {
     private EditText repetirCorreoText;
     private EditText passwordText;
     private EditText telefonoText;
+    private EditText direccionText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,7 @@ public class RegistroActivity extends AppCompatActivity {
         repetirCorreoText=((EditText) findViewById(R.id.emailRepetir));
         passwordText=((EditText)findViewById(R.id.passwordfield));
         telefonoText=((EditText)findViewById(R.id.tlf));
+        direccionText=((EditText)findViewById(R.id.direc));
 
         Button iniciarSesion = (Button) findViewById(R.id.button2);
         iniciarSesion.setOnClickListener(new View.OnClickListener() {
@@ -60,7 +62,7 @@ public class RegistroActivity extends AppCompatActivity {
                 registroTask tareaLogin = new registroTask(v);
                 if(nombreText.getText().toString().length()>0 && apellidosText.getText().toString().length()>0 && correoText.getText().toString().length()>0 && repetirCorreoText.getText().toString().length()>0 && passwordText.getText().toString().length()>0){
                     if(correoText.getText().toString().equals(repetirCorreoText.getText().toString())){
-                        tareaLogin.execute("1"+"#"+nombreText.getText().toString()+" "+apellidosText.getText().toString()+"#"+passwordText.getText().toString()+"#"+correoText.getText().toString()+"#"+telefonoText.getText().toString());
+                        tareaLogin.execute("1"+"#"+nombreText.getText().toString()+" "+apellidosText.getText().toString()+"#"+passwordText.getText().toString()+"#"+correoText.getText().toString()+"#"+telefonoText.getText().toString()+"#"+direccionText.getText().toString());
                     }else{
                         Toast.makeText(context, "Los correos no coinciden", Toast.LENGTH_SHORT).show();
                     }
