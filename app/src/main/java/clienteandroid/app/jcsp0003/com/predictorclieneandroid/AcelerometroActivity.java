@@ -45,7 +45,7 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
     private TextToSpeech leer;
     private float tempo;
 
-    private boolean tres;
+    private boolean caidaP;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,8 +84,8 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
                 if (movement > min_movement) {
                     if (current_time - last_movement >= limit) {
                         char aux=String.valueOf(movement).charAt(0);
-                        if(tres){
-                            if ( aux == '0' || aux == '1' || aux == '2') {
+                        /*if(tres){
+                            if ( aux == '0' || aux == '1') {
                                 tres=false;
                                 onStop();
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -98,17 +98,44 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
                                 startActivityForResult(hablar, RECONOCEDOR_VOZ);
                                 tempo = movement;
                             }else{
-                                if( aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                                if( aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
                                     Intent i = new Intent(ACTION_DIAL);
                                     i.setData(Uri.parse("tel:"+telefono));
                                     startActivity(i);
                                 }
                             }
                         }
-                        if ( aux == '3'){
+                        if ( aux == '2'){
                             tres=true;
-                        }
+                        }*/
+                        if( aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                            new Thread(new Runnable() {
+                                public void run() {
+                                    try {
+                                        Thread.sleep(20000);
+                                        if(caidaP){
+                                            caidaP=false;
+                                        }else{
+                                            Intent i = new Intent(ACTION_DIAL);
+                                            i.setData(Uri.parse("tel:"+telefono));
+                                            startActivity(i);
+                                        }
+                                    } catch(InterruptedException e) {}
+                                }
+                            }).start();
 
+                            caidaP=false;
+                            onStop();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                leer.speak("¿Te has caido?", TextToSpeech.QUEUE_FLUSH, null, null);
+                            }else {
+                                leer.speak("¿Te has caido?", TextToSpeech.QUEUE_FLUSH, null);
+                            }
+                            Intent hablar = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                            hablar.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "es-MX");
+                            startActivityForResult(hablar, RECONOCEDOR_VOZ);
+
+                        }
                     }
                     last_movement = current_time;
                 }
@@ -197,13 +224,16 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
             i.setData(Uri.parse("tel:061"));
             startActivity(i);
         }
+        if (respuestita.equals("Por favor, tenga cuidado")) {
+            caidaP=true;
+        }
 
     }
 
     public void inicializar(){
         respuest = proveerDatos();
         leer = new TextToSpeech(this, this);
-        tres=false;
+        caidaP=false;
     }
 
     //LLamada del botón del micro
@@ -225,7 +255,7 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
         respuestas.add(new Respuestas("socorro", "Llamando a los servicios de emergencia"));
         respuestas.add(new Respuestas("auxilio", "Llamando a los servicios de emergencia"));
         respuestas.add(new Respuestas("si", "Llamando a los servicios de emergencia"));
-        respuestas.add(new Respuestas("no", "Por favor, tenga cuidado!"));
+        respuestas.add(new Respuestas("no", "Por favor, tenga cuidado"));
         return respuestas;
     }
 

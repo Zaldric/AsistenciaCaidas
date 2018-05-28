@@ -12,8 +12,9 @@
         android:layout_height="90dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
         android:onClick="hablar"
-        app:srcCompat="@drawable/microfono" />
+        app:srcCompat="@drawable/microfono"
+        tools:layout_editor_absoluteX="152dp"
+        tools:layout_editor_absoluteY="166dp" />
 
 </android.support.constraint.ConstraintLayout>
