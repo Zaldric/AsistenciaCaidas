@@ -24,7 +24,6 @@ import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 
 import static android.content.Intent.ACTION_DIAL;
@@ -84,30 +83,6 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
                 if (movement > min_movement) {
                     if (current_time - last_movement >= limit) {
                         char aux=String.valueOf(movement).charAt(0);
-                        /*if(tres){
-                            if ( aux == '0' || aux == '1') {
-                                tres=false;
-                                onStop();
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    leer.speak("¿Te has caido?", TextToSpeech.QUEUE_FLUSH, null, null);
-                                }else {
-                                    leer.speak("¿Te has caido?", TextToSpeech.QUEUE_FLUSH, null);
-                                }
-                                Intent hablar = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                                hablar.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "es-MX");
-                                startActivityForResult(hablar, RECONOCEDOR_VOZ);
-                                tempo = movement;
-                            }else{
-                                if( aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
-                                    Intent i = new Intent(ACTION_DIAL);
-                                    i.setData(Uri.parse("tel:"+telefono));
-                                    startActivity(i);
-                                }
-                            }
-                        }
-                        if ( aux == '2'){
-                            tres=true;
-                        }*/
                         if( aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
                             new Thread(new Runnable() {
                                 public void run() {
@@ -116,6 +91,8 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
                                         if(caidaP){
                                             caidaP=false;
                                         }else{
+                                            tlfTask tareaLogin = new tlfTask();
+                                            tareaLogin.execute("13");
                                             Intent i = new Intent(ACTION_DIAL);
                                             i.setData(Uri.parse("tel:"+telefono));
                                             startActivity(i);
@@ -212,10 +189,10 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
         }
 
         if (respuestita.equals("Llamando a contacto")) {
-            Toast.makeText(context, telefono.toString(), Toast.LENGTH_LONG).show();
             Intent i = new Intent(ACTION_DIAL);
             i.setData(Uri.parse("tel:"+telefono));
             startActivity(i);
+
         }
         if (respuestita.equals("Llamando a los servicios de emergencia")) {
             logTask log = new logTask();
@@ -223,6 +200,8 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
             Intent i = new Intent(ACTION_DIAL);
             i.setData(Uri.parse("tel:061"));
             startActivity(i);
+            tlfTask tareaLogin = new tlfTask();
+            tareaLogin.execute("13");
         }
         if (respuestita.equals("Por favor, tenga cuidado")) {
             caidaP=true;
@@ -299,7 +278,6 @@ public class AcelerometroActivity extends AppCompatActivity implements SensorEve
         @Override
         protected void onPostExecute(String value) {
             telefono = value.toString();
-            Toast.makeText(context, value, Toast.LENGTH_LONG).show();
         }
     }
 

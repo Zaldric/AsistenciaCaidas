@@ -13,8 +13,11 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:onClick="hablar"
-        app:srcCompat="@drawable/microfono"
-        tools:layout_editor_absoluteX="152dp"
-        tools:layout_editor_absoluteY="166dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/microfono" android:contentDescription="@string/todo" />
 
 </android.support.constraint.ConstraintLayout>
